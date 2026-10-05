@@ -43,6 +43,18 @@
         "8003"
       ],
       "port": 8003
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8004",
+        "--directory",
+        "site"
+      ],
+      "port": 8004
     }
   ]
 }

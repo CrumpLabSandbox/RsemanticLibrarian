@@ -705,3 +705,19 @@ Other public sources considered: arXiv abstracts (metadata is CC0; the closest
 replacement for the APA corpus), Shakespeare's works with characters as factors, the
 Federalist Papers, and Discogs (CC0, but 12 GB and little descriptive text). Wayback
 Machine pages are not public domain.
+
+### Publishing: docs and a live demo on GitHub Pages
+
+The static export needs no server, so the public site is the mkdocs documentation with
+the NSF library exported under `demo/`. `scripts/publish_site.py` builds it into
+`site/` on the owner's machine and, with `--push`, replaces the `gh-pages` branch with
+one commit. Building in GitHub Actions was considered and set aside: the NSF build
+would take about 10 minutes per run.
+
+`sl export --min-count N` was added for this. It leaves rare words out of the exported
+word space. With `N = 5` the NSF demo keeps 20,104 of 47,603 words (98.7% of the text),
+the word file drops from 49 MB to 21 MB, and the first search downloads about 31 MB
+instead of 59 MB. The whole site is 89 MB and its largest file is 21 MB.
+
+The live server (FastAPI, keyword and hybrid search, large libraries, adding documents
+from the page) remains the second path and is not built.

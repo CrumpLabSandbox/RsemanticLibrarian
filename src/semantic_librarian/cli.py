@@ -295,7 +295,9 @@ def cmd_export(args: argparse.Namespace) -> int:
 
     with Library.open(args.library) as lib:
         say = None if args.quiet else (lambda m: print(f"  {m}"))
-        report = export_library(lib, args.out, precision=args.precision, log=say)
+        report = export_library(
+            lib, args.out, precision=args.precision, log=say, min_count=args.min_count
+        )
     print(f"exported to {report.path} ({report.megabytes:.1f} MB)")
     print(f"view it with: sl serve {args.library}, or put the folder on any static web host")
     return 0
@@ -462,6 +464,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["int8", "float32"],
         default="int8",
         help="vector storage: int8 (compact, default) or float32 (exact, 4x larger)",
+    )
+    s.add_argument(
+        "--min-count",
+        type=int,
+        default=1,
+        help="leave out words occurring fewer than N times, for a smaller download",
     )
     s.add_argument("-q", "--quiet", action="store_true")
     s.set_defaults(func=cmd_export)

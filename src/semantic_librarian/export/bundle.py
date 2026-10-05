@@ -115,6 +115,7 @@ def export_library(
     out: Path | str,
     precision: Precision = "int8",
     log: Callable[[str], None] | None = None,
+    min_count: int = 1,
 ) -> ExportReport:
     """Write the web app and the library's data to ``out``.
 
@@ -122,6 +123,10 @@ def export_library(
         lib: A built library.
         out: Folder to write; it must be new, empty, or an earlier export (replaced).
         precision: ``int8`` (default, compact) or ``float32`` (exact, four times larger).
+        min_count: Leave out words that occur fewer than this many times in the library.
+            The word vectors are usually the largest file a visitor downloads, and most
+            words are rare. A word left out cannot be used in a query or shown as a
+            result; documents and factors are unaffected.
     """
     say = log or (lambda _msg: None)
     if precision not in PRECISIONS:
@@ -136,8 +141,16 @@ def export_library(
     data = out / "data"
     (data / "spaces").mkdir(parents=True)
 
+    model = lib.embedder
     spaces: list[dict[str, Any]] = []
     for i, (name, space) in enumerate(lib.spaces.items()):
+        if name == "word" and min_count > 1:
+            assert model.vocab is not None
+            rows = np.flatnonzero(model.vocab.counts >= min_count)
+            say(f"keeping {len(rows)} of {len(space)} words (at least {min_count} occurrences)")
+            space = VectorSpace(
+                "word", [space.labels[r] for r in rows], np.asarray(space.vectors)[rows]
+            )
         say(f"writing space {name!r} ({len(space)} items)")
         stem = f"spaces/{i:02d}"
         scale = _write_vectors(space, data / f"{stem}.bin", precision)
@@ -210,7 +223,6 @@ def export_library(
                 data / "chunks" / f"{start // SHARD:05d}.json", chunk_texts[start : start + SHARD]
             )
 
-    model = lib.embedder
     _write_json(
         data / "manifest.json",
         {
@@ -226,6 +238,7 @@ def export_library(
             "compose_without_stopwords": bool(model.cfg.compose_without_stopwords),
             "n_documents": len(docs),
             "n_chunks": len(chunk_doc),
+            "min_count": min_count,
             "shard": SHARD,
             "spaces": spaces,
         },

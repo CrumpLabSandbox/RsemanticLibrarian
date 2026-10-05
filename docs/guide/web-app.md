@@ -49,6 +49,13 @@ Vectors are stored as 8-bit numbers, a quarter of their size in the library, whi
 changes similarities by less than 0.01. `--precision float32` keeps them exact at four
 times the size.
 
+The word vectors are usually the largest thing a visitor downloads, and most words in
+any library are rare. `sl export mylib site/ --min-count 5` leaves out words that occur
+fewer than five times. Such a word can no longer be typed as a query or shown as a
+result; documents and factors are unaffected. In a library of 9,932 project abstracts
+this kept 20,104 of 47,603 words, which still cover 98.7% of the text, and cut the word
+file from 49 MB to 21 MB.
+
 For a sense of scale, a library of 27,560 abstracts with 43,589 words and 24,215
 authors exports to 144 MB. A visitor downloads the document and word vectors, 73 MB,
 at their first search, and other spaces when first used.

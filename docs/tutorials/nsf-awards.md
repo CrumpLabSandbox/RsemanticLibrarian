@@ -10,6 +10,8 @@ becomes a *factor*, and every factor gets its own set of points in the same spac
 the words and the projects. You can then ask which programs are closest to a topic,
 which institutions resemble each other, or which programs sit near a state.
 
+The library built on this page is also online as a [live demo](../../demo/).
+
 ## Build it
 
 Fiscal year 2024 comes with the repository, already prepared, as

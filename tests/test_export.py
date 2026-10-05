@@ -123,6 +123,22 @@ def test_export_float32_and_overwrite_rules(built, tmp_path):
         export_library(built, tmp_path / "x", precision="float16")  # type: ignore[arg-type]
 
 
+def test_export_min_count_drops_rare_words(built, tmp_path):
+    out = tmp_path / "site"
+    export_library(built, out, min_count=3)
+    manifest = json.loads((out / "data" / "manifest.json").read_text())
+    by_name = {s["name"]: s for s in manifest["spaces"]}
+    counts = built.embedder.vocab.counts
+    kept = [t for t, c in zip(built.embedder.vocab.tokens, counts, strict=True) if c >= 3]
+    assert 0 < len(kept) < len(counts) and manifest["min_count"] == 3
+    assert json.loads((out / "data" / by_name["word"]["labels"]).read_text()) == kept
+    assert by_name["word"]["n"] == len(kept)
+    assert load(out, by_name["word"]).shape == (len(kept), by_name["word"]["dim"])
+    # every other space is exported whole
+    assert by_name["document"]["n"] == len(built.documents)
+    assert main(["export", str(built.root), str(out), "--min-count", "3", "-q"]) == 0
+
+
 def test_export_needs_a_current_build(tmp_path, crump_bib):
     with Library.create(tmp_path / "lib", embedder_params={"dim": 64}) as lib:
         lib.add_file(crump_bib)

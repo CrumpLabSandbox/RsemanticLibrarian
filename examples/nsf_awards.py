@@ -129,7 +129,7 @@ def main(folder: str = "libraries/nsf", *years: str) -> None:
     if Path(folder, "config.toml").exists():
         lib = Library.open(folder)
     else:
-        lib = Library.create(folder)
+        lib = Library.create(folder, name="NSF awards")
         # the same as: sl add LIBRARY FILE --text title,abstract --id id --factor investigator ...
         mapping = FieldMapping.from_options(text=["title", "abstract"], factors=FACTORS, id="id")
         for year in [int(y) for y in years] or [2024]:

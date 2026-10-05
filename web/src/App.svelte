@@ -91,8 +91,12 @@
     return rows.map((row) => ({ row, label: bundle.labels(space)[row] }));
   }
 
+  // the factor that names the people behind a document, when there is one
+  const PEOPLE = ["author", "authors", "investigator", "speaker"];
+
   function byline(docRow) {
-    const authors = levels("author", docRow).map((a) => a.label);
+    const people = PEOPLE.find((name) => docs.factors[name]);
+    const authors = people ? levels(people, docRow).map((a) => a.label) : [];
     const shown = authors.length > 4 ? [...authors.slice(0, 3), "et al."] : authors;
     return [shown.join("; "), docs.year[docRow]].filter(Boolean).join(" · ");
   }
@@ -396,7 +400,8 @@
       </h2>
       {#if result.unknown.length}
         <p class="note">
-          Not in this library's vocabulary, so ignored: {result.unknown.join(", ")}
+          Not in this library's vocabulary{bundle.manifest.min_count > 1 ? " (or too rare)" : ""},
+          so ignored: {result.unknown.join(", ")}
         </p>
       {/if}
       {#if !result.from && !result.terms.length}

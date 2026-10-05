@@ -8,6 +8,10 @@ neighbours.
 
 It runs on your own computer. Nothing is uploaded, and no model is downloaded.
 
+[Try the live demo](demo/): 9,932 research projects funded by the U.S. National Science
+Foundation in 2024, searchable in your browser together with their investigators,
+institutions and funding programs. The first search downloads about 30 MB.
+
 The method is described in Aujla, Crump, Cook & Jamieson (2019), *The Semantic
 Librarian: A search engine built from vector-space models of semantics*, Behavior
 Research Methods, <https://doi.org/10.3758/s13428-019-01268-4>.

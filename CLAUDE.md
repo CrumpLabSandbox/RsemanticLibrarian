@@ -33,7 +33,7 @@ uv venv --python 3.11 && source .venv/bin/activate && uv pip install -e ".[dev]"
 ## Checks (run all before every commit)
 
 ```bash
-pytest              # 111 tests, about 20 s, about 97% line coverage
+pytest              # 112 tests, about 20 s, about 97% line coverage
 mkdocs build --strict   # only when docs/ or docstrings changed; needs the [docs] extra
 ruff check .        # lint (line length 100)
 ruff format .       # formatter; CI runs `ruff format --check .`
@@ -87,6 +87,20 @@ state, program, division, directorate, year); about 3 minutes to build, 420 MB. 
 file list is at `https://api.nsf.gov/services/v2/s3/list-files`. Unlike the APA corpus
 this data can be published.
 
+### Publishing the website (docs + live demo)
+
+```bash
+python scripts/publish_site.py           # builds site/: mkdocs docs, NSF demo under demo/
+python scripts/publish_site.py --push    # replaces the gh-pages branch on origin
+```
+
+The owner builds on this machine and pushes; there is no Pages workflow in CI, by
+choice (the NSF build would take about 10 minutes per run there). The demo is exported
+with `--min-count 5` so the first search downloads about 31 MB. `--push` writes a
+single commit with no history, so the branch does not grow. GitHub Pages must be set to
+deploy from the `gh-pages` branch. Publishing is public even if the repository is
+private: only push when asked.
+
 ### Working on the web app
 
 ```bash
@@ -96,7 +110,8 @@ npm run build      # writes src/semantic_librarian/web/, which is committed
 ```
 
 `.claude/launch.json` defines preview servers `apa` (port 8000), `demo` (port 8001),
-`docs` (the documentation site, port 8002) and `nsf` (port 8003).
+`docs` (the documentation site, port 8002), `nsf` (port 8003) and `site` (the built
+website in `site/`, port 8004).
 
 ### The full APA corpus
 
@@ -152,7 +167,8 @@ web/                 web app source: Vite + Svelte 5, plain JavaScript
   src/*.svelte       App (state and layout), Picker (item autocomplete), Map (SVG scatter)
   test/rank.mjs      runs the browser modules under Node for tests/test_export.py
 tests/               pytest; fixtures in tests/fixtures (R references, APA 100-article sample, crump.bib)
-scripts/             legacy_reference.R, convert_legacy_fixtures.py, apa_paper_examples.py
+scripts/             legacy_reference.R, convert_legacy_fixtures.py, apa_paper_examples.py,
+                     publish_site.py (docs + NSF demo -> site/ -> gh-pages)
 docs/                documentation site sources (mkdocs-material; config in mkdocs.yml)
   tutorials/         three tutorials mirroring the R vignettes
   guide/             concepts, inputs, web app, CLI and Python reference, coming from R
@@ -260,8 +276,8 @@ Next, in order (see `plan.md` Section 4):
 2. **Phase 4, live server.** Replace the static `sl serve` with FastAPI behind a
    `SearchProvider` interface in the app, adding keyword and hybrid search. Other gaps
    are listed in `plan.md` Section 12 (whole-corpus map, shareable links, Web Worker).
-3. **Publish the documentation** once the owner decides about making the repository
-   public (plan Section 13 lists what to check first).
+3. **Publish the website** with `python scripts/publish_site.py --push` when the owner
+   says so, then set Pages to the `gh-pages` branch.
 
 Open follow-ups: performance of BEAGLE's convolution order term on very large corpora
 (consider smaller `max_ngram`, measured with `sl evaluate`), and confirming the parallel

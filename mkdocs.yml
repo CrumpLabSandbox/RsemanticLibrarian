@@ -2,6 +2,11 @@ site_name: Semantic Librarian
 site_description: Build searchable vector-space libraries from your own documents.
 repo_url: https://github.com/CrumpLab/RsemanticLibrarian
 docs_dir: docs
+# The live demo is added to the built site by scripts/publish_site.py, so links to
+# demo/ point at something mkdocs does not know about.
+validation:
+  links:
+    unrecognized_links: info
 theme:
   name: material
   features:

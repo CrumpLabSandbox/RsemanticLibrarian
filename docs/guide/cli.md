@@ -82,7 +82,12 @@ Open the library as a web app on this computer. See [The web app](web-app.md).
 ## `sl export LIBRARY OUT`
 
 Write the web app and the library's data to the folder `OUT`, for a static web host.
-Options: `--precision`, `-q`.
+
+| Option | Meaning |
+|---|---|
+| `--precision P` | `int8` (default) or `float32` |
+| `--min-count N` | leave out words occurring fewer than `N` times, for a smaller download |
+| `-q` | no progress messages |
 
 ## `sl info LIBRARY`
 
