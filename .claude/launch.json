@@ -1,0 +1,48 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "apa",
+      "runtimeExecutable": ".venv/bin/sl",
+      "runtimeArgs": [
+        "serve",
+        "libraries/apa",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "demo",
+      "runtimeExecutable": ".venv/bin/sl",
+      "runtimeArgs": [
+        "serve",
+        "libraries/demo",
+        "--port",
+        "8001"
+      ],
+      "port": 8001
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": ".venv/bin/mkdocs",
+      "runtimeArgs": [
+        "serve",
+        "-a",
+        "127.0.0.1:8002"
+      ],
+      "port": 8002
+    },
+    {
+      "name": "nsf",
+      "runtimeExecutable": ".venv/bin/sl",
+      "runtimeArgs": [
+        "serve",
+        "libraries/nsf",
+        "--port",
+        "8003"
+      ],
+      "port": 8003
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "semantic-librarian"
+version = "0.1.0.dev0"
+description = "Build searchable vector-space libraries (BEAGLE and friends) from your own documents."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-2.0-or-later"
+authors = [
+  { name = "Matthew J. C. Crump", email = "mcrump@brooklyn.cuny.edu" },
+]
+keywords = ["semantic search", "BEAGLE", "vector space", "cognitive modeling", "embeddings"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Text Processing :: Indexing",
+]
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "scikit-learn>=1.4",
+  "bibtexparser>=1.4,<2",
+]
+
+[project.optional-dependencies]
+pdf = [
+  "pymupdf>=1.24.3",
+]
+docs = [
+  "mkdocs>=1.6,<2",
+  "mkdocs-material>=9.5",
+  "mkdocstrings[python]>=0.26",
+]
+dev = [
+  "pymupdf>=1.24.3",
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.6",
+  "mypy>=1.10",
+  "pyreadr>=0.5",
+]
+
+[project.scripts]
+sl = "semantic_librarian.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/CrumpLab/RsemanticLibrarian"
+Paper = "https://doi.org/10.3758/s13428-019-01268-4"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/semantic_librarian"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["legacy", "apa-data", "libraries", "tests/fixtures/*.npz", "web/node_modules", "site"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+  # pymupdf's SWIG bindings, at import
+  "ignore:builtin type .* has no __module__ attribute:DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["legacy"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["semantic_librarian"]
+mypy_path = "src"
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true

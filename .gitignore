@@ -1,4 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Documentation site built by mkdocs
+/site/
+
+# Web app (the built app in src/semantic_librarian/web/ is committed)
+node_modules/
+
+# R (legacy package)
 .Rhistory
 .RData
 .Rproj.user
-inst/doc
+
+# Local libraries created while experimenting
+/libraries/
+.DS_Store
+
+# NSF's raw yearly files, downloaded by examples/nsf_awards.py. The prepared
+# nsf-data/nsf-awards-2024.jsonl is committed so that there is something to try.
+/nsf-data/*.zip
+
+# The APA abstracts are not redistributed. Put your own copy here.
+/apa-data/

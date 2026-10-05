@@ -1,0 +1,31 @@
+{
+  "inputs": ["Hello, this is a sentence I want to clean.", "The  BEAGLE model (Jones & Mewhort, 2007) encodes order-information.", "Don't split   contractions? e.g., i.e., 1990s; 3.14 -- dashes—em.", "Café naïve straße Köhler Æsop œuvre", "  leading and trailing  ", "tabs\there and\nnewlines", "Curly “quotes” and ‘single’ … ellipsis", "!!!", ""],
+  "breakdown": ["hello  this is a sentence i want to clean ", "the  beagle model  jones   mewhort        encodes order information ", "don t split   contractions  e g   i e       s          dashes  em ", "cafe naive strasse koehler aesop oeuvre", "  leading and trailing  ", "tabs\there and newlines", "curly  quotes  and  single      ellipsis", "   ", ""],
+  "sl_clean": [
+    ["hello", "this", "is", "a", "sentence", "i", "want", "to", "clean"],
+    ["the", "beagle", "model", "jones", "mewhort", "encodes", "order", "information"],
+    ["don", "t", "split", "contractions", "e", "g", "i", "e", "s", "dashes", "em"],
+    ["cafe", "naive", "strasse", "koehler", "aesop", "oeuvre"],
+    ["leading", "and", "trailing"],
+    ["tabs", "here", "and", "newlines"],
+    ["curly", "quotes", "and", "single", "ellipsis"],
+    [],
+    []
+  ],
+  "sl_corpus_dictionary": ["hello", "this", "is", "a", "sentence", "i", "want", "to", "clean", "the", "beagle", "model", "jones", "mewhort", "encodes", "order", "information", "don", "t", "split", "contractions", "e", "g", "s", "dashes", "em", "cafe", "naive", "strasse", "koehler", "aesop", "oeuvre", "leading", "and", "trailing", "tabs", "here", "newlines", "curly", "quotes", "single", "ellipsis"],
+  "sl_clean_vector_inputs": ["Hello, this is a sentence I want to clean.", "The  BEAGLE model (Jones & Mewhort, 2007) encodes order-information.", "Don't split   contractions? e.g., i.e., 1990s; 3.14 -- dashes—em.", "Café naïve straße Köhler Æsop œuvre", "  leading and trailing  ", "tabs\there and\nnewlines", "Curly “quotes” and ‘single’ … ellipsis"],
+  "sl_clean_vector": [
+    ["hello", "this", "is", "a", "sentence", "i", "want", "to", "clean"],
+    ["the", "beagle", "model", "jones", "mewhort", "encodes", "order", "information"],
+    ["don", "t", "split", "contractions", "e"],
+    ["g"],
+    ["i"],
+    ["e"],
+    ["s"],
+    ["dashes", "em"],
+    ["cafe", "naive", "strasse", "koehler", "aesop", "oeuvre"],
+    ["leading", "and", "trailing"],
+    ["tabs", "here", "and", "newlines"],
+    ["curly", "quotes", "and", "single", "ellipsis"]
+  ]
+}

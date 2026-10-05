@@ -1,0 +1,153 @@
+---
+title: "Semantic Librarian for bib files"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+pkgdown:
+  as_is: true
+#vignette: >
+#  %\VignetteIndexEntry{Semantic_Librarian_Tutorial}
+#  %\VignetteEngine{knitr::rmarkdown}
+#  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## Overview
+
+.bib files are a common format for storing bibliographic entries, and then auto-generating reference sections in a manuscript. These files can contain an abstract field, and other arbitrary fields containing additional text. As a result, bib files can be used as corpus for input into the semantic librarian.
+
+For this example I used a .bib file generated from a Zotero folder where I keep all of my publications. The bib file includes the text from the abstracts from each paper. Below are steps taken to create BEAGLE vectors for the words and abstracts, and then produce a plot of the multi-dimensional scaling solution for the similarity between abstracts.
+
+First, here is an example from the first two entries in the .bib file.
+
+```
+
+@incollection{loganHierarchicalControlCognitive2011,
+  title = {Hierarchical Control of Cognitive Processes: {{The}} Case for Skilled Typewriting},
+  volume = {54},
+  isbn = {978-0-12-385527-5},
+  abstract = {The idea that cognition is controlled hierarchically is appealing to many but is difficult to demonstrate empirically. Often, nonhierarchical theories can account for the data as well as hierarchical ones do. The purpose of this chapter is to document the case for hierarchical control in skilled typing and present it as an example of a strategy for demonstrating hierarchical control in other cognitive acts. We propose that typing is controlled by two nested feedback loops that can be distinguished in terms of the factors that affect them, that communicate through intermediate representations (words), that know little about how each other work, and rely on different kinds of feedback. We discuss hierarchical control in other skills; the relation between hierarchical control and familiar concepts like automaticity, procedural memory, and implicit knowledge; and the development of hierarchical skills. We end with speculations about the role of hierarchical control in everyday cognition and the search for a meaningful life.},
+  booktitle = {Psychology of {{Learning}} and {{Motivation}}},
+  publisher = {{Elsevier}},
+  date = {2011},
+  pages = {1-27},
+  author = {Logan, Gordon D. and Crump, Matthew J. C.},
+  editor = {Ross, B. H.},
+  file = {/Users/mattcrump/Zotero/storage/7UZ27VPX/Logan and Crump - 2011.pdf}
+}
+
+@article{crumpWarningThisKeyboard2010,
+  title = {Warning: {{This}} Keyboard Will Deconstruct— {{The}} Role of the Keyboard in Skilled Typewriting},
+  volume = {17},
+  issn = {1069-9384, 1531-5320},
+  url = {https://CrumpLab.github.io/CognitionPerformanceLab/CrumpPubs/Crump and Logan - 2010c.pdf},
+  doi = {10.3758/PBR.17.3.394},
+  shorttitle = {Warning},
+  abstract = {Skilled actions are commonly assumed to be controlled by precise internal schemas or cognitive maps. We challenge these ideas in the context of skilled typing, where prominent theories assume that typing is controlled by a well-learned cognitive map that plans finger movements without feedback. In two experiments, we dem- onstrate that online physical interaction with the keyboard critically mediates typing skill. Typists performed single-word and paragraph typing tasks on a regular keyboard, a laser-projection keyboard, and two decon- structed keyboards, made by removing successive layers of a regular keyboard. Averaged over the laser and de- constructed keyboards, response times for the first keystroke increased by 37, the interval between keystrokes increased by 120, and error rate increased by 177, relative to those of the regular keyboard. A schema view predicts no influence of external motor feedback, because actions could be planned internally with high preci- sion. We argue that the expert knowledge mediating action control emerges during online interaction with the
+physical environment.},
+  number = {3},
+  journaltitle = {Psychonomic Bulletin \& Review},
+  urldate = {2013-07-03},
+  date = {2010-06},
+  pages = {394-399},
+  author = {Crump, Matthew J. C. and Logan, Gordon D.},
+  file = {/Users/mattcrump/Zotero/storage/HSDIU7XE/Crump and Logan - 2010.pdf}
+}
+
+```
+
+## cleaning and vectorizing
+
+Next, the .bib file is loaded into R as a data frame using the `RefManageR` package. The text is cleaned, and then BEAGLE vectors for the words and abstracts are produced.
+
+```{r}
+library(RsemanticLibrarian)
+library(RefManageR)
+library(stringr)
+library(tidyr)
+library(tidyverse)
+library(plotly)
+library(LSAfun)
+
+# read in .bib file as list
+my_bib <- ReadBib("Crump.bib")
+
+# convert to data frame
+article_df <- as.data.frame(my_bib) %>%
+  mutate(index=1:n())
+
+# cleaning to removes { }'s
+article_df$title <- str_replace_all(article_df$title,"\\{|\\}","")
+article_df$abstract <- str_replace_all(article_df$abstract,"\\{|\\}","")
+article_df$author <- str_replace_all(article_df$author,"\\{|\\}","")
+
+# more cleaning
+article_df$abstract <- str_replace_all(article_df$abstract,"- ","")
+article_df$abstract <- str_replace_all(article_df$abstract,"\\&","")
+article_df$abstract <- str_replace_all(article_df$abstract,"i[.]e[.]","")
+article_df$abstract <- str_replace_all(article_df$abstract,"e[.]g[.]","")
+article_df$abstract <- str_replace_all(article_df$abstract,"\\\\","")
+article_df$abstract <- str_replace_all(article_df$abstract," .[.]","")
+
+# create corpus dictionary
+dictionary_words <- sl_corpus_dictionary(
+    unlist(article_df[,c("title","abstract")], use.names=FALSE)
+  )
+
+# convert to sentences, clean
+clean_sentences <- sl_clean_vector(
+    unlist(article_df[,c("title","abstract")], use.names=FALSE)
+  )
+
+# word ids for sentences
+sentence_ids <- sl_word_ids_sentences(clean_sentences,dictionary_words)
+
+# create word vectors
+word_vectors <- sl_beagle_vectors(s_ids = sentence_ids,
+                                    dictionary = dictionary_words,
+                                    riv = c(100,6),
+                                    verbose = 1000)
+
+# create abstract vectors
+the_abstracts <- unite(article_df[,c("title","abstract")],col="new",sep=".")
+clean_abstracts <- lapply(the_abstracts$new,
+                          sl_clean)
+
+abstract_word_ids <- sl_word_ids_sentences(clean_abstracts,dictionary_words)
+
+article_vectors <- sl_article_vectors(abstract_word_ids, w_matrix = word_vectors, verbose=FALSE)
+
+```
+
+## plot MDS solution
+
+The cosine similarity between article vectors is computed, and then submitted to multi-dimensional scaling. The titles of the abstracts can be viewed by hovering over the dots.
+
+```{r}
+# distance matrix
+mdistance <- cosine(t(article_vectors))
+fit <- cmdscale(1-mdistance,eig=TRUE, k=2,add=TRUE)
+
+cluster <- kmeans(fit$points,3)
+get_cluster_indexes <- as.numeric(cluster$cluster)
+fit <- data.frame(fit$points)
+fit <-cbind(fit,cluster=get_cluster_indexes)
+fit <- cbind(fit,titles=article_df$title)
+
+plot_ly(fit, x = ~X1, y= ~X2, 
+        type = "scatter", 
+        mode = "markers", 
+        text = ~titles,
+        color= ~cluster,
+        hoverinfo = 'text')
+```
+

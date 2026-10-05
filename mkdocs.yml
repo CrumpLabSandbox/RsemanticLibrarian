@@ -1,0 +1,56 @@
+site_name: Semantic Librarian
+site_description: Build searchable vector-space libraries from your own documents.
+repo_url: https://github.com/CrumpLab/RsemanticLibrarian
+docs_dir: docs
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+nav:
+  - Home: index.md
+  - Tutorials:
+      - Search a library of abstracts: tutorials/abstracts.md
+      - A library from a BibTeX file: tutorials/bibliography.md
+      - A library from any text: tutorials/any-text.md
+      - One space, many kinds of things (NSF awards): tutorials/nsf-awards.md
+  - Guide:
+      - How it works: guide/concepts.md
+      - Adding documents: guide/inputs.md
+      - The web app: guide/web-app.md
+      - Command reference: guide/cli.md
+      - Python reference: guide/python-api.md
+      - Coming from the R package: guide/from-r.md
+  - Evaluation on the APA corpus: apa-evaluation.md
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            show_root_heading: true
+            heading_level: 3
+            docstring_style: google
+            members_order: source
